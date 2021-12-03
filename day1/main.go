@@ -1,52 +1,44 @@
 package main
 
 import (
-    "bufio"
     "fmt"
     "log"
     "os"
     "strconv"
+    "strings"
 )
 
-func main() {
-    var nums []int
+func calcSum(X []int) int {
+    sum := 0
+    for i, _ := range X[1:] {
+        if X[i+1] > X[i] {
+            sum += 1
+        }
+    }
+    return sum
+}
 
-    f, err := os.Open("./input")
+func main() {
+
+    content, err := os.ReadFile("./input")
     if err != nil {
         log.Fatal(err)
     }
-    defer f.Close()
+    lines := strings.Split(strings.Trim(string(content), "\n"), "\n")
 
-    scanner := bufio.NewScanner(f)
-    scanner.Split(bufio.ScanWords)
-
-    for scanner.Scan() {
-        i, _ := strconv.Atoi(scanner.Text())
-        nums = append(nums, i)
+    nums := make([]int, len(lines))
+    for i, n := range lines {
+        nums[i], _ = strconv.Atoi(n)
     }
 
-    if err := scanner.Err(); err != nil {
-        log.Fatal(err)
-    }
-
-    sum := 0
-    for i, _ := range nums[1:] {
-        if nums[i+1] > nums[i] {
-            sum += 1
-        }
-    }
+    sum := calcSum(nums)
     fmt.Println(sum)
 
-    var nums3 []int
+    nums3 := make([]int, len(nums))
     for i, _ := range nums[2:] {
-        nums3 = append(nums3, nums[i] + nums[i+1] + nums[i+2])
+        nums3[i] = nums[i] + nums[i+1] + nums[i+2]
     }
 
-    sum = 0
-    for i, _ := range nums3[1:] {
-        if nums3[i+1] > nums3[i] {
-            sum += 1
-        }
-    }
-    fmt.Println(sum)
+    sum3 := calcSum(nums3)
+    fmt.Println(sum3)
 }
