@@ -1,7 +1,6 @@
 package main
 
 import (
-    "bufio"
     "fmt"
     "log"
     "os"
@@ -10,29 +9,17 @@ import (
 )
 
 func readFile() []string {
-    var lines []string
 
-    f, err := os.Open("./input")
+    content, err := os.ReadFile("./input")
     if err != nil {
         log.Fatal(err)
     }
-    defer f.Close()
-
-    scanner := bufio.NewScanner(f)
-    scanner.Split(bufio.ScanLines)
-
-    for scanner.Scan() {
-        lines = append(lines, string(scanner.Text()))
-    }
-
-    if err := scanner.Err(); err != nil {
-        log.Fatal(err)
-    }
+    lines := strings.Split(strings.Trim(string(content), "\n"), "\n")
 
     return lines
 }
 
-func part1() {
+func part1(lines) {
     position := 0
     depth := 0
     lines := readFile()
