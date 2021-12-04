@@ -81,6 +81,7 @@ func (card *Card) Play(num int) bool {
 
 }
 
+// Note: had to pass by reference so that "won" would be updated
 func (card *Card) Win() bool {
 	for _, row := range card.marked {
 		if All(row) {
@@ -106,6 +107,9 @@ func (card *Card) Win() bool {
 
 func Part1(cards []Card, plays []int) int {
 	for _, play := range plays {
+		// This method seems to make operate on a copy of the item
+		// card.won doesn't get updated here (if it did, it would
+		// need to be reset for part 2
 		for _, card := range cards {
 			if card.Play(play) {
 				return FinalScore(card, play)
@@ -119,6 +123,8 @@ func Part2(cards []Card, plays []int) int {
 	var winning_card Card
 	var winning_play int
 	for _, play := range plays {
+		// Note that I had to use the index to access each element
+		// in the slice so that card.won would be property updated
 		for i := range cards {
 			if !cards[i].won && cards[i].Play(play) {
 				winning_card = cards[i]
