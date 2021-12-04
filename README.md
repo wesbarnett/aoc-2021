@@ -2,4 +2,4 @@
 
 [Advent of Code 2021](https://adventofcode.com) solutions.
 
-Primarily using Python, but am also trying Go.
+I'm primarily using [Python](https://www.python.org), but I'm also trying [Go](https://go.dev) if time allows.
