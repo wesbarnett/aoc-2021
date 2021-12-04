@@ -1,7 +1,7 @@
 package main
 
 import (
-    "flag"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -138,9 +138,9 @@ func Part2(cards []Card, plays []int) int {
 
 func main() {
 
-    var file string
-    flag.StringVar(&file, "infile", "input", "Input file")
-    flag.Parse()
+	var file string
+	flag.StringVar(&file, "infile", "input", "Input file")
+	flag.Parse()
 
 	content, err := os.ReadFile(file)
 	if err != nil {
