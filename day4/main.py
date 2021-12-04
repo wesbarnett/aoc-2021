@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
 
+
 class Card:
 
     def __init__(self, inputs):
@@ -42,6 +43,7 @@ def part1(cards, plays):
             if result:
                 return card, play
 
+
 def part2(cards, plays):
     for play in plays:
         for card in cards:
@@ -50,6 +52,7 @@ def part2(cards, plays):
                 if result:
                     winner = card, play
     return winner
+
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -66,4 +69,3 @@ if __name__ == "__main__":
 
     winner, play = part2(cards, plays)
     print(sum(list(winner.unmarked_nums))*play)
-
