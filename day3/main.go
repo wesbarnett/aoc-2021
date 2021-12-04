@@ -34,12 +34,34 @@ func calcMajorityBit(nums []int, place int) int {
     for _, x := range nums {
         sum += x >> place & 1
     }
-    if (float64(sum) / float64(len(nums))) > 0.5 {
+    if (float64(sum) / float64(len(nums))) >= 0.5 {
         return 1
     } else {
         return 0
     }
 
+}
+
+func filterCO2Nums(nums []int, place int) []int {
+    majorityBit := calcMajorityBit(nums, place)
+    var result []int
+    for _, x := range nums {
+        if majorityBit != ((x >> place) & 1) {
+            result = append(result, x)
+        }
+    }
+    return result
+}
+
+func filterOxygenNums(nums []int, place int) []int {
+    majorityBit := calcMajorityBit(nums, place)
+    var result []int
+    for _, x := range nums {
+        if majorityBit == ((x >> place) & 1) {
+            result = append(result, x)
+        }
+    }
+    return result
 }
 
 func part1(nums []int, num_bits int) int {
@@ -55,7 +77,31 @@ func part1(nums []int, num_bits int) int {
     return gamma*epsilon
 }
 
+func part2(nums []int, num_bits int) int {
+
+    oxygenNums := make([]int, len(nums))
+    copy(oxygenNums, nums)
+    for i := num_bits-1; i >= 0; i-- {
+        oxygenNums = filterOxygenNums(oxygenNums, i)
+        if len(oxygenNums) == 1 {
+            break
+        }
+    }
+
+    CO2Nums := make([]int, len(nums))
+    copy(CO2Nums, nums)
+    for i := num_bits-1; i >= 0; i-- {
+        CO2Nums = filterCO2Nums(CO2Nums, i)
+        if len(CO2Nums) == 1 {
+            break
+        }
+    }
+
+    return oxygenNums[0]*CO2Nums[0]
+}
+
 func main() {
     nums, num_bits := readFile("input")
     fmt.Println(part1(nums, num_bits))
+    fmt.Println(part2(nums, num_bits))
 }
