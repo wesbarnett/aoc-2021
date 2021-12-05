@@ -14,7 +14,7 @@ type pos struct {
 	y int
 }
 
-func vertical_line(x1 int, y1 int, x2 int, y2 int, counter map[pos]int) map[pos]int {
+func VerticalLine(x1 int, y1 int, x2 int, y2 int, counter map[pos]int) map[pos]int {
 	if y2 < y1 {
 		tmp := y1
 		y1 = y2
@@ -30,7 +30,7 @@ func vertical_line(x1 int, y1 int, x2 int, y2 int, counter map[pos]int) map[pos]
 	return counter
 }
 
-func horizontal_line(x1 int, y1 int, x2 int, y2 int, counter map[pos]int) map[pos]int {
+func HorizontalLine(x1 int, y1 int, x2 int, y2 int, counter map[pos]int) map[pos]int {
 	if x2 < x1 {
 		tmp := x1
 		x1 = x2
@@ -44,6 +44,64 @@ func horizontal_line(x1 int, y1 int, x2 int, y2 int, counter map[pos]int) map[po
 		}
 	}
 	return counter
+}
+
+func DiagonalLine(x1 int, y1 int, x2 int, y2 int, counter map[pos]int) map[pos]int {
+
+
+    var y_dir int
+
+    if y1 > y2 {
+        y_dir = -1
+    } else {
+        y_dir = 1
+    }
+
+    y := y1
+
+    if x1 > x2 {
+        for x := x1; x > x2-1; x-- {
+            if _, ok := counter[pos{x, y}]; ok {
+                counter[pos{x, y}] += 1
+            } else {
+                counter[pos{x, y}] = 1
+            }
+            y += y_dir
+        }
+    } else {
+        for x := x1; x < x2+1; x++ {
+            if _, ok := counter[pos{x, y}]; ok {
+                counter[pos{x, y}] += 1
+            } else {
+                counter[pos{x, y}] = 1
+            }
+            y += y_dir
+        }
+    }
+
+    return counter
+}
+
+func ProcessLine(line string) (int, int, int, int) {
+    item := strings.Split(line, " -> ")
+    coord1 := strings.Split(item[0], ",")
+    coord2 := strings.Split(item[1], ",")
+    x1, _ := strconv.Atoi(coord1[0])
+    y1, _ := strconv.Atoi(coord1[1])
+    x2, _ := strconv.Atoi(coord2[0])
+    y2, _ := strconv.Atoi(coord2[1])
+
+    return x1, y1, x2, y2
+}
+
+func CalcResult(counter map[pos]int) int {
+	result := 0
+	for _, v := range counter {
+		if v >= 2 {
+			result += 1
+		}
+	}
+    return result
 }
 
 func main() {
@@ -60,26 +118,25 @@ func main() {
 
 	counter := make(map[pos]int)
 	for _, line := range lines {
-		item := strings.Split(line, " -> ")
-		coord1 := strings.Split(item[0], ",")
-		coord2 := strings.Split(item[1], ",")
-		x1, _ := strconv.Atoi(coord1[0])
-		y1, _ := strconv.Atoi(coord1[1])
-		x2, _ := strconv.Atoi(coord2[0])
-		y2, _ := strconv.Atoi(coord2[1])
-
+        x1, y1, x2, y2 := ProcessLine(line)
 		if x1 == x2 {
-			counter = vertical_line(x1, y1, x2, y2, counter)
+			counter = VerticalLine(x1, y1, x2, y2, counter)
 		} else if y1 == y2 {
-			counter = horizontal_line(x1, y1, x2, y2, counter)
+			counter = HorizontalLine(x1, y1, x2, y2, counter)
 		}
 	}
+	fmt.Println(CalcResult(counter))
 
-	result := 0
-	for _, v := range counter {
-		if v >= 2 {
-			result += 1
-		}
-	}
-	fmt.Println(result)
+	counter2 := make(map[pos]int)
+	for _, line := range lines {
+        x1, y1, x2, y2 := ProcessLine(line)
+		if x1 == x2 {
+			counter2 = VerticalLine(x1, y1, x2, y2, counter2)
+		} else if y1 == y2 {
+			counter2 = HorizontalLine(x1, y1, x2, y2, counter2)
+		} else {
+			counter2 = DiagonalLine(x1, y1, x2, y2, counter2)
+        }
+    }
+	fmt.Println(CalcResult(counter2))
 }
