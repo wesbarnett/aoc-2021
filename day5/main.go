@@ -23,7 +23,7 @@ func NewCounter() Counter {
 	return Counter{pos}
 }
 
-func (c *Counter) add(x int, y int) {
+func (c *Counter) Add(x int, y int) {
 	if _, ok := c.pos[Pos{x, y}]; ok {
 		c.pos[Pos{x, y}] += 1
 	} else {
@@ -31,27 +31,25 @@ func (c *Counter) add(x int, y int) {
 	}
 }
 
-func VerticalLine(x1 int, y1 int, x2 int, y2 int, counter Counter) Counter {
+func (c *Counter) AddVerticalLine(x1 int, y1 int, x2 int, y2 int) {
 	if y2 < y1 {
 		y1, y2 = y2, y1
 	}
 	for y := y1; y < y2+1; y++ {
-		counter.add(x1, y)
+		c.Add(x1, y)
 	}
-	return counter
 }
 
-func HorizontalLine(x1 int, y1 int, x2 int, y2 int, counter Counter) Counter {
+func (c *Counter) AddHorizontalLine(x1 int, y1 int, x2 int, y2 int) {
 	if x2 < x1 {
 		x1, x2 = x2, x1
 	}
 	for x := x1; x < x2+1; x++ {
-		counter.add(x, y1)
+		c.Add(x, y1)
 	}
-	return counter
 }
 
-func DiagonalLine(x1 int, y1 int, x2 int, y2 int, counter Counter) Counter {
+func (c *Counter) AddDiagonalLine(x1 int, y1 int, x2 int, y2 int) {
 
 	var y_dir int
 
@@ -65,17 +63,15 @@ func DiagonalLine(x1 int, y1 int, x2 int, y2 int, counter Counter) Counter {
 
 	if x1 > x2 {
 		for x := x1; x > x2-1; x-- {
-			counter.add(x, y)
+			c.Add(x, y)
 			y += y_dir
 		}
 	} else {
 		for x := x1; x < x2+1; x++ {
-			counter.add(x, y)
+			c.Add(x, y)
 			y += y_dir
 		}
 	}
-
-	return counter
 }
 
 func ProcessLine(line string) (int, int, int, int) {
@@ -100,6 +96,16 @@ func CalcResult(counter Counter) int {
 	return result
 }
 
+func (c *Counter) AddLine(x1 int, y1 int, x2 int, y2 int, addDiagonal bool) {
+	if x1 == x2 {
+		c.AddVerticalLine(x1, y1, x2, y2)
+	} else if y1 == y2 {
+		c.AddHorizontalLine(x1, y1, x2, y2)
+	} else if addDiagonal {
+		c.AddDiagonalLine(x1, y1, x2, y2)
+	}
+}
+
 func main() {
 
 	var file string
@@ -115,24 +121,14 @@ func main() {
 	counter := NewCounter()
 	for _, line := range lines {
 		x1, y1, x2, y2 := ProcessLine(line)
-		if x1 == x2 {
-			counter = VerticalLine(x1, y1, x2, y2, counter)
-		} else if y1 == y2 {
-			counter = HorizontalLine(x1, y1, x2, y2, counter)
-		}
+		counter.AddLine(x1, y1, x2, y2, false)
 	}
 	fmt.Println(CalcResult(counter))
 
 	counter2 := NewCounter()
 	for _, line := range lines {
 		x1, y1, x2, y2 := ProcessLine(line)
-		if x1 == x2 {
-			counter2 = VerticalLine(x1, y1, x2, y2, counter2)
-		} else if y1 == y2 {
-			counter2 = HorizontalLine(x1, y1, x2, y2, counter2)
-		} else {
-			counter2 = DiagonalLine(x1, y1, x2, y2, counter2)
-		}
+		counter2.AddLine(x1, y1, x2, y2, true)
 	}
 	fmt.Println(CalcResult(counter2))
 }
