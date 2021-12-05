@@ -74,21 +74,9 @@ func (c *Counter) AddDiagonalLine(x1 int, y1 int, x2 int, y2 int) {
 	}
 }
 
-func ProcessLine(line string) (int, int, int, int) {
-	item := strings.Split(line, " -> ")
-	coord1 := strings.Split(item[0], ",")
-	coord2 := strings.Split(item[1], ",")
-	x1, _ := strconv.Atoi(coord1[0])
-	y1, _ := strconv.Atoi(coord1[1])
-	x2, _ := strconv.Atoi(coord2[0])
-	y2, _ := strconv.Atoi(coord2[1])
-
-	return x1, y1, x2, y2
-}
-
-func CalcResult(counter Counter) int {
+func (c *Counter) CalcResult() int {
 	result := 0
-	for _, v := range counter.pos {
+	for _, v := range c.pos {
 		if v >= 2 {
 			result += 1
 		}
@@ -104,6 +92,18 @@ func (c *Counter) AddLine(x1 int, y1 int, x2 int, y2 int, addDiagonal bool) {
 	} else if addDiagonal {
 		c.AddDiagonalLine(x1, y1, x2, y2)
 	}
+}
+
+func ProcessLine(line string) (int, int, int, int) {
+	item := strings.Split(line, " -> ")
+	coord1 := strings.Split(item[0], ",")
+	coord2 := strings.Split(item[1], ",")
+	x1, _ := strconv.Atoi(coord1[0])
+	y1, _ := strconv.Atoi(coord1[1])
+	x2, _ := strconv.Atoi(coord2[0])
+	y2, _ := strconv.Atoi(coord2[1])
+
+	return x1, y1, x2, y2
 }
 
 func main() {
@@ -123,12 +123,12 @@ func main() {
 		x1, y1, x2, y2 := ProcessLine(line)
 		counter.AddLine(x1, y1, x2, y2, false)
 	}
-	fmt.Println(CalcResult(counter))
+	fmt.Println(counter.CalcResult())
 
 	counter2 := NewCounter()
 	for _, line := range lines {
 		x1, y1, x2, y2 := ProcessLine(line)
 		counter2.AddLine(x1, y1, x2, y2, true)
 	}
-	fmt.Println(CalcResult(counter2))
+	fmt.Println(counter2.CalcResult())
 }
