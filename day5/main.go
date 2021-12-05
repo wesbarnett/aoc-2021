@@ -9,44 +9,49 @@ import (
 	"strings"
 )
 
-type pos struct {
+type Pos struct {
 	x int
 	y int
 }
 
-func VerticalLine(x1 int, y1 int, x2 int, y2 int, counter map[pos]int) map[pos]int {
+type Counter struct {
+	pos map[Pos]int
+}
+
+func NewCounter() Counter {
+	pos := make(map[Pos]int)
+	return Counter{pos}
+}
+
+func (c *Counter) add(x int, y int) {
+	if _, ok := c.pos[Pos{x, y}]; ok {
+		c.pos[Pos{x, y}] += 1
+	} else {
+		c.pos[Pos{x, y}] = 1
+	}
+}
+
+func VerticalLine(x1 int, y1 int, x2 int, y2 int, counter Counter) Counter {
 	if y2 < y1 {
-		tmp := y1
-		y1 = y2
-		y2 = tmp
+		y1, y2 = y2, y1
 	}
 	for y := y1; y < y2+1; y++ {
-		if _, ok := counter[pos{x1, y}]; ok {
-			counter[pos{x1, y}] += 1
-		} else {
-			counter[pos{x1, y}] = 1
-		}
+		counter.add(x1, y)
 	}
 	return counter
 }
 
-func HorizontalLine(x1 int, y1 int, x2 int, y2 int, counter map[pos]int) map[pos]int {
+func HorizontalLine(x1 int, y1 int, x2 int, y2 int, counter Counter) Counter {
 	if x2 < x1 {
-		tmp := x1
-		x1 = x2
-		x2 = tmp
+		x1, x2 = x2, x1
 	}
 	for x := x1; x < x2+1; x++ {
-		if _, ok := counter[pos{x, y1}]; ok {
-			counter[pos{x, y1}] += 1
-		} else {
-			counter[pos{x, y1}] = 1
-		}
+		counter.add(x, y1)
 	}
 	return counter
 }
 
-func DiagonalLine(x1 int, y1 int, x2 int, y2 int, counter map[pos]int) map[pos]int {
+func DiagonalLine(x1 int, y1 int, x2 int, y2 int, counter Counter) Counter {
 
 	var y_dir int
 
@@ -60,20 +65,12 @@ func DiagonalLine(x1 int, y1 int, x2 int, y2 int, counter map[pos]int) map[pos]i
 
 	if x1 > x2 {
 		for x := x1; x > x2-1; x-- {
-			if _, ok := counter[pos{x, y}]; ok {
-				counter[pos{x, y}] += 1
-			} else {
-				counter[pos{x, y}] = 1
-			}
+			counter.add(x, y)
 			y += y_dir
 		}
 	} else {
 		for x := x1; x < x2+1; x++ {
-			if _, ok := counter[pos{x, y}]; ok {
-				counter[pos{x, y}] += 1
-			} else {
-				counter[pos{x, y}] = 1
-			}
+			counter.add(x, y)
 			y += y_dir
 		}
 	}
@@ -93,9 +90,9 @@ func ProcessLine(line string) (int, int, int, int) {
 	return x1, y1, x2, y2
 }
 
-func CalcResult(counter map[pos]int) int {
+func CalcResult(counter Counter) int {
 	result := 0
-	for _, v := range counter {
+	for _, v := range counter.pos {
 		if v >= 2 {
 			result += 1
 		}
@@ -115,7 +112,7 @@ func main() {
 	}
 	lines := strings.Split(strings.Trim(string(content), "\n"), "\n")
 
-	counter := make(map[pos]int)
+	counter := NewCounter()
 	for _, line := range lines {
 		x1, y1, x2, y2 := ProcessLine(line)
 		if x1 == x2 {
@@ -126,7 +123,7 @@ func main() {
 	}
 	fmt.Println(CalcResult(counter))
 
-	counter2 := make(map[pos]int)
+	counter2 := NewCounter()
 	for _, line := range lines {
 		x1, y1, x2, y2 := ProcessLine(line)
 		if x1 == x2 {
