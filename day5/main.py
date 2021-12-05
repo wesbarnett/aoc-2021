@@ -3,7 +3,7 @@ from collections import Counter
 from pathlib import Path
 
 
-def horizontal_line(x1, y1, x2, y2, counter):
+def vertical_line(x1, y1, x2, y2, counter):
     if y1 > y2:
         y2, y1 = y1, y2
     for i in range(y1, y2+1):
@@ -12,7 +12,7 @@ def horizontal_line(x1, y1, x2, y2, counter):
     return counter
 
 
-def vertical_line(x1, y1, x2, y2, counter):
+def horizontal_line(x1, y1, x2, y2, counter):
     if x1 > x2:
         x2, x1 = x1, x2
     for i in range(x1, x2+1):
@@ -43,6 +43,17 @@ def diagonal_line(x1, y1, x2, y2, counter):
     return counter
 
 
+def process_line(line):
+    item = line.split(" -> ")
+    x1, y1 = tuple([int(x) for x in item[0].split(",")])
+    x2, y2 = tuple([int(x) for x in item[1].split(",")])
+    return x1, y1, x2, y2
+
+
+def calc_result(counter):
+    return sum(v >= 2 for k, v in counter.items())
+
+
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("-i", "--infile", required=False, type=Path, default=Path("input"))
@@ -52,33 +63,24 @@ if __name__ == "__main__":
 
     counter = Counter()
     for line in lines:
-        item = line.split(" -> ")
-        x1, y1 = tuple([int(x) for x in item[0].split(",")])
-        x2, y2 = tuple([int(x) for x in item[1].split(",")])
+        x1, y1, x2, y2 = process_line(line)
 
-        # Only consider horizontal or vertical lines
         if x1 == x2:
-            counter = horizontal_line(x1, y1, x2, y2, counter)
-        elif y1 == y2:
             counter = vertical_line(x1, y1, x2, y2, counter)
+        elif y1 == y2:
+            counter = horizontal_line(x1, y1, x2, y2, counter)
 
-    result = sum(v >= 2 for k, v in counter.items())
-
-    print(result)
+    print(calc_result(counter))
 
     counter = Counter()
     for line in lines:
-        item = line.split(" -> ")
-        x1, y1 = tuple([int(x) for x in item[0].split(",")])
-        x2, y2 = tuple([int(x) for x in item[1].split(",")])
+        x1, y1, x2, y2 = process_line(line)
 
         if x1 == x2:
-            counter = horizontal_line(x1, y1, x2, y2, counter)
-        elif y1 == y2:
             counter = vertical_line(x1, y1, x2, y2, counter)
+        elif y1 == y2:
+            counter = horizontal_line(x1, y1, x2, y2, counter)
         else:
             counter = diagonal_line(x1, y1, x2, y2, counter)
 
-    result = sum(v >= 2 for k, v in counter.items())
-
-    print(result)
+    print(calc_result(counter))
