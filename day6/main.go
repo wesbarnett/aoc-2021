@@ -14,13 +14,12 @@ func countFish(line []string, days int) int {
 	fish := make([]int, 9)
 
 	for _, x := range line {
-		i, _ := strconv.Atoi(x)
+		i, _ := strconv.ParseUint(x, 10, 32)
 		fish[i] += 1
 	}
 
 	for i := 0; i < days; i++ {
-		fish = append(fish[1:], fish[0])
-		fish[6] += fish[8]
+		fish = append(fish[1:6], fish[6]+fish[8], fish[7], fish[8], fish[0])
 	}
 
 	sum := 0
