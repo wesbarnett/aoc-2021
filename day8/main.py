@@ -3,6 +3,40 @@ from collections import defaultdict
 from pathlib import Path
 
 
+def process_word(x):
+    return "".join(sorted(list(x)))
+
+
+def decode_line(line):
+
+    signal, output = line.split(" | ")
+    digits = {}
+
+    for k, length in zip([1, 4, 7, 8], [2, 4, 3, 7]):
+        digits[k] = set(list(filter(lambda x: len(x) == length, signal.split()))[0])
+
+    for x in filter(lambda x: len(x) == 5, signal.split()):
+        chars = set(x)
+        if len(digits[1] & chars) == 2:
+            digits[3] = chars
+        elif len(digits[4] & chars) == 3:
+            digits[5] = chars
+        else:
+            digits[2] = chars
+
+    for x in filter(lambda x: len(x) == 6, signal.split()):
+        chars = set(x)
+        if len(digits[4] & chars) == 4:
+            digits[9] = chars
+        elif len(digits[1] & chars) == 1:
+            digits[6] = chars
+        else:
+            digits[0] = chars
+
+    charmap = {process_word(v): str(k) for k, v in digits.items()}
+    return int("".join([charmap[process_word(x)] for x in output.split()]))
+
+
 if __name__ == "__main__":
 
     digits = {
@@ -41,3 +75,5 @@ if __name__ == "__main__":
                 count += 1
 
     print(count)
+
+    print(sum([decode_line(line) for line in lines]))
