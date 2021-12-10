@@ -14,17 +14,6 @@ type pos struct {
 	y int
 }
 
-type Set map[pos]struct{}
-
-func (s Set) add(item pos) {
-	s[item] = struct{}{}
-}
-
-func (s Set) has(item pos) bool {
-	_, ok := s[item]
-	return ok
-}
-
 func isLower(data [][]int, x int, y int) bool {
 
 	p := data[x][y]
@@ -51,34 +40,20 @@ func isLower(data [][]int, x int, y int) bool {
 func walkBasin(p pos, data [][]int, ch chan int) {
 	var visit func(p pos, ch chan int)
 	var next pos
-	visited := Set{}
+	visited := make(map[pos]struct{})
 
 	visit = func(p pos, ch chan int) {
 
-		visited.add(p)
+		visited[p] = struct{}{}
 
 		if !(p.x < 0 || p.y < 0 || p.x >= len(data) || p.y >= len(data[p.x]) || data[p.x][p.y] == 9) {
 
 			ch <- 1
 
-			next = pos{p.x + 1, p.y}
-			if !visited.has(next) {
-				visit(next, ch)
-			}
-
-			next = pos{p.x - 1, p.y}
-			if !visited.has(next) {
-				visit(next, ch)
-			}
-
-			next = pos{p.x, p.y + 1}
-			if !visited.has(next) {
-				visit(next, ch)
-			}
-
-			next = pos{p.x, p.y - 1}
-			if !visited.has(next) {
-				visit(next, ch)
+			for _, next = range []pos{pos{p.x + 1, p.y}, pos{p.x - 1, p.y}, pos{p.x, p.y + 1}, pos{p.x, p.y - 1}} {
+				if _, ok := visited[next]; !ok {
+					visit(next, ch)
+				}
 			}
 
 		}
