@@ -50,17 +50,12 @@ def autocomplete(line):
         ">": 4
     }
 
-    result = []
-    while line:
-        result.append(pairs[line.pop()])
-
     score = 0
-    for x in result:
+    while line:
         score *= 5
-        score += points[x]
+        score += points[pairs[line.pop()]]
 
     return score
-
 
 
 if __name__ == "__main__":
@@ -82,4 +77,3 @@ if __name__ == "__main__":
     print(score)
 
     print(median([autocomplete(line) for line in incomplete]))
-
