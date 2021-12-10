@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strings"
 )
 
-func findFirstIncorrect(line string) int {
+func findFirstIncorrect(line string) (int, []rune) {
 
 	var stack []rune
 	pairs := map[rune]rune{')': '(', ']': '[', '}': '{', '>': '<'}
@@ -18,15 +19,29 @@ func findFirstIncorrect(line string) int {
 			if stack[len(stack)-1] == pairs[x] {
 				stack = stack[:len(stack)-1]
 			} else {
-				return points[x]
+				return points[x], nil
 			}
 		} else {
 			stack = append(stack, x)
 		}
 	}
 
-	return 0
+	return 0, stack
 
+}
+
+func autocomplete(stack []rune) int {
+
+	pairs := map[rune]rune{'(': ')', '[': ']', '{': '}', '<': '>'}
+	points := map[rune]int{')': 1, ']': 2, '}': 3, '>': 4}
+
+	score := 0
+	for i := len(stack) - 1; i > -1; i-- {
+		score *= 5
+		score += points[pairs[stack[i]]]
+	}
+
+	return score
 }
 
 func main() {
@@ -42,9 +57,23 @@ func main() {
 	lines := strings.Split(strings.Trim(string(content), "\n"), "\n")
 
 	total_score := 0
+	var incomplete [][]rune
 	for _, line := range lines {
-		total_score += findFirstIncorrect(line)
+		score, stack := findFirstIncorrect(line)
+		total_score += score
+		if stack != nil {
+			incomplete = append(incomplete, stack)
+		}
 	}
 
 	fmt.Println(total_score)
+
+	var compl_scores []int
+	for _, stack := range incomplete {
+		compl_scores = append(compl_scores, autocomplete(stack))
+	}
+
+	sort.Ints(compl_scores)
+
+	fmt.Println(compl_scores[(len(compl_scores)+1)/2-1])
 }
