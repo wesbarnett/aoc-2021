@@ -71,7 +71,7 @@ if __name__ == "__main__":
     for line in lines:
         result, stack = find_first_incorrect_score(line)
         score += result
-        if result == 0:
+        if stack:
             incomplete.append(stack)
 
     print(score)
