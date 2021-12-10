@@ -5,8 +5,25 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strings"
 )
+
+type pos struct {
+	x int
+	y int
+}
+
+type Set map[pos]struct{}
+
+func (s Set) add(item pos) {
+	s[item] = struct{}{}
+}
+
+func (s Set) has(item pos) bool {
+	_, ok := s[item]
+	return ok
+}
 
 func isLower(data [][]int, x int, y int) bool {
 
@@ -31,6 +48,47 @@ func isLower(data [][]int, x int, y int) bool {
 	return true
 }
 
+func walkBasin(p pos, data [][]int, ch chan int) {
+	var visit func(p pos, ch chan int)
+	var next pos
+	visited := Set{}
+
+	visit = func(p pos, ch chan int) {
+
+		visited.add(p)
+
+		if !(p.x < 0 || p.y < 0 || p.x >= len(data) || p.y >= len(data[p.x]) || data[p.x][p.y] == 9) {
+
+			ch <- 1
+
+			next = pos{p.x + 1, p.y}
+			if !visited.has(next) {
+				visit(next, ch)
+			}
+
+			next = pos{p.x - 1, p.y}
+			if !visited.has(next) {
+				visit(next, ch)
+			}
+
+			next = pos{p.x, p.y + 1}
+			if !visited.has(next) {
+				visit(next, ch)
+			}
+
+			next = pos{p.x, p.y - 1}
+			if !visited.has(next) {
+				visit(next, ch)
+			}
+
+		}
+
+	}
+	visit(p, ch)
+	close(ch)
+
+}
+
 func main() {
 	var file string
 	flag.StringVar(&file, "infile", "input", "Input file")
@@ -52,11 +110,14 @@ func main() {
 
 	}
 
+	// Part 1
 	var lows []int
+	var lows_loc []pos
 	for i, row := range data {
 		for j, x := range row {
 			if isLower(data, i, j) {
 				lows = append(lows, x)
+				lows_loc = append(lows_loc, pos{i, j})
 			}
 		}
 	}
@@ -67,4 +128,23 @@ func main() {
 	}
 
 	fmt.Println(risk_score)
+
+	// Part 2
+	var sizes []int
+	for _, p := range lows_loc {
+		ch := make(chan int)
+		go walkBasin(p, data, ch)
+		size := 0
+		for v := range ch {
+			size += v
+		}
+		sizes = append(sizes, size)
+	}
+
+	sort.Ints(sizes)
+	result := 1
+	for _, size := range sizes[len(sizes)-3 : len(sizes)] {
+		result *= size
+	}
+	fmt.Println(result)
 }
