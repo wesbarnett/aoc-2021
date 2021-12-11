@@ -27,7 +27,8 @@ if __name__ == "__main__":
     data = [[int(x) for x in row] for row in lines]
 
     flashes = 0
-    for _ in range(100):
+    step = 0
+    while True:
         flashed = set()
 
         data = [[x + 1 for x in row] for row in data]
@@ -36,8 +37,18 @@ if __name__ == "__main__":
             for j, x in enumerate(row):
                 flash_sequence(i, j, data, flashed)
 
+        # Part 2 - first step all fish flash at same time
+        if len(list(flashed)) == len(data[0])*len(data):
+            all_flash_step = step+1
+            break
+
         for x, y in list(flashed):
             data[x][y] = 0
-            flashes += 1
+            # Part 1 - how many flashes after 100 steps
+            if step < 100:
+                flashes += 1
+
+        step += 1
 
     print(flashes)
+    print(all_flash_step)
