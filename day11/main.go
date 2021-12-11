@@ -74,8 +74,12 @@ func main() {
 
 	data := ReadMatrixInts(file)
 
-	flashes := 0
-	for step := 0; step < 100; step++ {
+	size := len(data[0]) * len(data)
+
+	var all_flash_step int
+	total_flashes := 0
+	step := 0
+	for {
 
 		flashed := make(map[pos]struct{})
 		data = IncrementAll(data)
@@ -86,11 +90,26 @@ func main() {
 			}
 		}
 
+		flashes := 0
 		for p := range flashed {
 			data[p.x][p.y] = 0
 			flashes += 1
 		}
+
+		// Part 1 - how many flashes after 100 steps
+		if step < 100 {
+			total_flashes += flashes
+		}
+
+		// Part 2 - what step when all flash
+		if flashes == size {
+			all_flash_step = step + 1
+			break
+		}
+
+		step += 1
 	}
 
-	fmt.Println(flashes)
+	fmt.Println(total_flashes)
+	fmt.Println(all_flash_step)
 }
