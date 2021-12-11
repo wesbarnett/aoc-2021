@@ -13,19 +13,21 @@ type pos struct {
 	y int
 }
 
+func IsValidPoint(x int, y int, data [][]int) bool {
+	return x >= 0 && x < len(data) && y >= 0 && y < len(data[x])
+}
+
 func FlashSequence(i int, j int, data [][]int, flashed map[pos]struct{}) {
 
 	var flash func(i int, j int)
 	flash = func(i int, j int) {
-		if data[i][j] > 9 {
-			if _, ok := flashed[pos{i, j}]; !ok {
-				flashed[pos{i, j}] = struct{}{}
-				for x := i - 1; x < i+2; x++ {
-					for y := j - 1; y < j+2; y++ {
-						if (pos{x, y} != pos{i, j}) && x >= 0 && x < len(data) && y >= 0 && y < len(data[x]) {
-							data[x][y] += 1
-							flash(x, y)
-						}
+		if _, ok := flashed[pos{i, j}]; !ok && data[i][j] > 9 {
+			flashed[pos{i, j}] = struct{}{}
+			for x := i - 1; x < i+2; x++ {
+				for y := j - 1; y < j+2; y++ {
+					if (pos{x, y} != pos{i, j}) && IsValidPoint(x, y, data) {
+						data[x][y] += 1
+						flash(x, y)
 					}
 				}
 			}
