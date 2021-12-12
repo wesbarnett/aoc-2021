@@ -19,6 +19,7 @@ func traverse(graph map[string][]string, visitCond func(map[string]int, string) 
 			return 1
 		}
 
+		// Only keep track if this was a small cave
 		if strings.ToLower(node) == node {
 			visited[node] += 1
 		}
@@ -42,10 +43,12 @@ func traverse(graph map[string][]string, visitCond func(map[string]int, string) 
 
 }
 
+// Can only visit small caves once
 func part1VisitCond(visited map[string]int, dst string) bool {
 	return dst != "start" && visited[dst] == 0
 }
 
+// Can only visit small caves once, except for a single small cave we can visit twice
 func part2VisitCond(visited map[string]int, dst string) bool {
 	return dst != "start" && ((!visitedCaveTwice(visited) && visited[dst] < 2) || (visitedCaveTwice(visited) && visited[dst] < 1))
 }
