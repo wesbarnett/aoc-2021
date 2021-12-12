@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func traverse(graph map[string][]string) int {
+func traverse(graph map[string][]string, visitCond func(map[string]int, string) bool) int {
 
 	visited := make(map[string]int)
 
@@ -25,7 +25,7 @@ func traverse(graph map[string][]string) int {
 
 		sum := 0
 		for _, dst := range graph[node] {
-			if dst != "start" && visited[dst] == 0 {
+			if visitCond(visited, dst) {
 				sum += visit(dst)
 			}
 		}
@@ -42,6 +42,24 @@ func traverse(graph map[string][]string) int {
 
 }
 
+func part1VisitCond(visited map[string]int, dst string) bool {
+	return dst != "start" && visited[dst] == 0
+}
+
+func part2VisitCond(visited map[string]int, dst string) bool {
+	return dst != "start" && ((!visitedCaveTwice(visited) && visited[dst] < 2) || (visitedCaveTwice(visited) && visited[dst] < 1))
+}
+
+func visitedCaveTwice(visited map[string]int) bool {
+
+	for _, v := range visited {
+		if v == 2 {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	var file string
 	flag.StringVar(&file, "infile", "input", "Input file")
@@ -53,7 +71,6 @@ func main() {
 	}
 
 	lines := strings.Split(strings.Trim(string(content), "\n"), "\n")
-	fmt.Println(lines)
 	graph := make(map[string][]string)
 	for _, line := range lines {
 		x := strings.Split(line, "-")
@@ -61,5 +78,6 @@ func main() {
 		graph[x[1]] = append(graph[x[1]], x[0])
 	}
 
-	fmt.Println(traverse(graph))
+	fmt.Println(traverse(graph, part1VisitCond))
+	fmt.Println(traverse(graph, part2VisitCond))
 }
