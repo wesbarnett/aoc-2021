@@ -31,6 +31,7 @@ func traverse(graph map[string][]string, visitCond func(map[string]int, string) 
 			}
 		}
 
+		// If this was a small cave, indicate it can be used in the next path
 		if visited[node] > 0 {
 			visited[node] -= 1
 		}
