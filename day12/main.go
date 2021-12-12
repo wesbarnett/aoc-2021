@@ -20,11 +20,7 @@ func traverse(graph map[string][]string) int {
 		}
 
 		if strings.ToLower(node) == node {
-			if _, ok := visited[node]; ok {
-				visited[node] += 1
-			} else {
-				visited[node] = 1
-			}
+			visited[node] += 1
 		}
 
 		sum := 0
