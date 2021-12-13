@@ -22,9 +22,9 @@ def fold_vertical(thermal_image, max_y, fold):
 
 
 def print_image(thermal_image, max_x, max_y):
-    image = [["." for x in range(max_x+1)] for y in range(max_y+1)]
+    image = [["." for x in range(max_x)] for y in range(max_y)]
     for (x, y), v in thermal_image.items():
-        if v == 1:
+        if v > 0:
             image[y][x] = "#"
 
     for row in image:
@@ -41,8 +41,7 @@ if __name__ == "__main__":
 
     instructions = []
     thermal_image = Counter()
-    max_x = 0
-    max_y = 0
+    max_x, max_y = 0, 0
     for line in lines:
         if line.startswith("fold along"):
             instructions.append(line)
@@ -55,16 +54,17 @@ if __name__ == "__main__":
             if y > max_y:
                 max_y = y
 
-    print_image(thermal_image, max_x, max_y)
-
     for inst in instructions:
         _, val = inst.split("=")
         val = int(val)
         if "x" in inst:
             fold_vertical(thermal_image, max_y, val)
+            max_x = val
         elif "y" in inst:
             fold_horizontal(thermal_image, max_x, val)
+            max_y = val
         else:
             raise ValueError("Unknown fold instruction.")
+
     print(sum(thermal_image.values()))
     print_image(thermal_image, max_x, max_y)
