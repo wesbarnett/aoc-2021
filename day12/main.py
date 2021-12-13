@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from collections import Counter, defaultdict
 from pathlib import Path
+import time
 
 
 def traverse(graph, can_visit_cave_func):
@@ -56,5 +57,12 @@ if __name__ == "__main__":
         if src != "start" and dst != "end":
             graph[dst].add(src)
 
-    print(traverse(graph, can_visit_cave))
-    print(traverse(graph, can_visit_cave2))
+    start = time.time()
+    print(f"Result: {traverse(graph, can_visit_cave)}")
+    end = time.time()
+    print(f"Elapsed: {end - start:.3f}s")
+
+    start = time.time()
+    print(f"Result: {traverse(graph, can_visit_cave2)}")
+    end = time.time()
+    print(f"Elapsed: {end - start:.3f}s")

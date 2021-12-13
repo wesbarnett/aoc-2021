@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"strings"
+	"time"
 )
 
 func traverse(graph map[string][]string, visitCond func(map[string]int, string) bool) int {
@@ -82,6 +82,13 @@ func main() {
 		graph[x[1]] = append(graph[x[1]], x[0])
 	}
 
-	fmt.Println(traverse(graph, part1VisitCond))
-	fmt.Println(traverse(graph, part2VisitCond))
+	part1Start := time.Now()
+	log.Printf("Result: %v", traverse(graph, part1VisitCond))
+	part1Elapsed := time.Since(part1Start)
+	log.Printf("Elapsed: %v", part1Elapsed)
+
+	part2Start := time.Now()
+	log.Printf("Result: %v", traverse(graph, part2VisitCond))
+	part2Elapsed := time.Since(part2Start)
+	log.Printf("Elapsed: %v", part2Elapsed)
 }
