@@ -54,7 +54,7 @@ if __name__ == "__main__":
             if y > max_y:
                 max_y = y
 
-    for inst in instructions:
+    for i, inst in enumerate(instructions):
         _, val = inst.split("=")
         val = int(val)
         if "x" in inst:
@@ -66,5 +66,7 @@ if __name__ == "__main__":
         else:
             raise ValueError("Unknown fold instruction.")
 
-    print(sum(thermal_image.values()))
+        if i == 0:
+            print(sum(thermal_image.values()))
+
     print_image(thermal_image, max_x, max_y)
