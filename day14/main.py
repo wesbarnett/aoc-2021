@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from collections import Counter
 from pathlib import Path
 
 
@@ -9,10 +10,7 @@ class Node:
         self.next = None
 
     def __repr__(self):
-        if self.next:
-            return f"Node(val={self.val}, next={self.next.val})"
-        else:
-            return f"Node(val={self.val}, next=None)"
+        return f"Node(val={self.val})"
 
 
 def create_starting_polymer(polymer_template):
@@ -46,18 +44,17 @@ if __name__ == "__main__":
 
     lines = Path(args.infile).read_text().rstrip("\n").split("\n")
     polymer_template = lines[0]
-    pair_insertion_rules = lines[3:]
+    pair_insertion_rules = lines[2:]
 
     head = create_starting_polymer(polymer_template)
 
+    for _ in range(10):
+        insert_elements(head, pair_insertion_rules)
+
+    counter = Counter()
     node = head
     while node:
-        print(node)
+        counter[node.val] += 1
         node = node.next
 
-    insert_elements(head, pair_insertion_rules)
-
-    node = head
-    while node:
-        print(node)
-        node = node.next
+    print(counter.most_common()[0][1] - counter.most_common()[-1][1])
