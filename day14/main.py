@@ -20,12 +20,10 @@ def update_pair_counts(pair_counts, rules):
 
     # Keep a separate copy of the counter because the rules are applied at the same time
     new_pair_counts = Counter(pair_counts)
-    for rule in rules:
-        pair, ins = rule.split(" -> ")
-        if pair_counts[pair] > 0:
-            new_pair_counts[pair[0]+ins] += pair_counts[pair]
-            new_pair_counts[ins+pair[1]] += pair_counts[pair]
-            new_pair_counts[pair] -= pair_counts[pair]
+    for pair, ins in rules:
+        new_pair_counts[pair[0]+ins] += pair_counts[pair]
+        new_pair_counts[ins+pair[1]] += pair_counts[pair]
+        new_pair_counts[pair] -= pair_counts[pair]
     return Counter(new_pair_counts)
 
 
@@ -67,7 +65,7 @@ if __name__ == "__main__":
 
     lines = Path(args.infile).read_text().rstrip("\n").split("\n")
     polymer_template = lines[0]
-    rules = lines[2:]
+    rules = [rule.split(" -> ") for rule in lines[2:]]
 
     counts = run(10, polymer_template, rules)
     print(counts.most_common()[0][1]-counts.most_common()[-1][1])
