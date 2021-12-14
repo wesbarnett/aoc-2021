@@ -24,7 +24,7 @@ def update_pair_counts(pair_counts, rules):
         new_pair_counts[pair[0]+ins] += pair_counts[pair]
         new_pair_counts[ins+pair[1]] += pair_counts[pair]
         new_pair_counts[pair] -= pair_counts[pair]
-    return Counter(new_pair_counts)
+    return new_pair_counts
 
 
 def run(steps, polymer_template, rules):
