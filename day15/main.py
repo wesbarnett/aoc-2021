@@ -39,23 +39,22 @@ def tile_data(data, n):
 def find_lowest_risk(data, dup=1):
 
     data = tile_data(data, dup)
-    ncols = len(data[0])
-    nrows = len(data)
 
-    risk = [[0 for _ in range(ncols)] for _ in range(nrows)]
-    risk[0][0] = 0
+    ncols, nrows = len(data[0]), len(data)
+
+    data[0][0] = 0
 
     for row in range(1, nrows):
-        risk[row][0] = data[row][0] + risk[row-1][0]
+        data[row][0] += data[row-1][0]
 
     for col in range(1, ncols):
-        risk[0][col] = data[0][col] + risk[0][col-1]
+        data[0][col] += data[0][col-1]
 
     for row in range(1, nrows):
         for col in range(1, ncols):
-            risk[row][col] += data[row][col] + min(risk[row-1][col], risk[row][col-1])
+            data[row][col] += min(data[row-1][col], data[row][col-1])
 
-    return risk[-1][-1]
+    return data[-1][-1]
 
 
 if __name__ == "__main__":
