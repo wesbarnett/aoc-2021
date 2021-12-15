@@ -33,26 +33,20 @@ def run(steps, polymer_template, rules):
     for _ in range(steps):
         pair_counts = update_pair_counts(pair_counts, rules)
 
-    return get_element_counts(pair_counts)
+    return get_element_counts(pair_counts, polymer_template[0])
 
 
-def get_element_counts(pair_counts):
+def get_element_counts(pair_counts, first_char):
     """
-    Count each starting element and ending element for each pair. These should be
-    exactly the same numbers for each element except for the starting pair and the
-    ending pair (which will be off by one). Thus we take the max for each element from
-    those two counts.
+    Count each second element in a pair. By doing this we miss the first element of the
+    polymer, so add 1 for it.
     """
-
-    counts1 = Counter()
-    counts2 = Counter()
-    for k, v in pair_counts.items():
-        counts1[k[0]] += v
-        counts2[k[1]] += v
 
     counts = Counter()
-    for k in counts1.keys():
-        counts[k] = max(counts1[k], counts2[k])
+    for k, v in pair_counts.items():
+        counts[k[1]] += v
+
+    counts[first_char] += 1
 
     return counts
 

@@ -33,23 +33,14 @@ func updatePairCounts(pairCounts map[string]int, rules map[string]string) map[st
 	return newPairCounts
 }
 
-func getElementCounts(pairCounts map[string]int) map[string]int {
-
-	counts1 := make(map[string]int)
-	counts2 := make(map[string]int)
-	for k, v := range pairCounts {
-		counts1[string(k[0])] += v
-		counts2[string(k[1])] += v
-	}
+func getElementCounts(polymerTemplate string, pairCounts map[string]int) map[string]int {
 
 	counts := make(map[string]int)
-	for k := range counts1 {
-		if counts1[k] > counts2[k] {
-			counts[k] = counts1[k]
-		} else {
-			counts[k] = counts2[k]
-		}
+	for k, v := range pairCounts {
+		counts[string(k[1])] += v
 	}
+
+	counts[string(polymerTemplate[0])] += 1
 
 	return counts
 }
@@ -76,7 +67,7 @@ func run(steps int, polymerTemplate string, rules map[string]string) int {
 		pairCounts = updatePairCounts(pairCounts, rules)
 	}
 
-	counts := getElementCounts(pairCounts)
+	counts := getElementCounts(polymerTemplate, pairCounts)
 	return getMinAndMaxDiff(counts)
 }
 
