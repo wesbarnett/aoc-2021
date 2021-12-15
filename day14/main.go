@@ -33,6 +33,9 @@ func updatePairCounts(pairCounts map[string]int, rules map[string]string) map[st
 	return newPairCounts
 }
 
+// getElementCounts counts all elements in the polymer using pair counts
+// It does this by counting the second item in each pair. Since the first element
+// in the polymer is not the second item of a pair, it needs to be added once
 func getElementCounts(polymerTemplate string, pairCounts map[string]int) map[string]int {
 
 	counts := make(map[string]int)
