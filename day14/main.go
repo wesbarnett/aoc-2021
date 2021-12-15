@@ -36,14 +36,14 @@ func updatePairCounts(pairCounts map[string]int, rules map[string]string) map[st
 // getElementCounts counts all elements in the polymer using pair counts
 // It does this by counting the second item in each pair. Since the first element
 // in the polymer is not the second item of a pair, it needs to be added once
-func getElementCounts(polymerTemplate string, pairCounts map[string]int) map[string]int {
+func getElementCounts(firstElement byte, pairCounts map[string]int) map[string]int {
 
 	counts := make(map[string]int)
 	for k, v := range pairCounts {
 		counts[string(k[1])] += v
 	}
 
-	counts[string(polymerTemplate[0])] += 1
+	counts[string(firstElement)] += 1
 
 	return counts
 }
@@ -70,7 +70,7 @@ func run(steps int, polymerTemplate string, rules map[string]string) int {
 		pairCounts = updatePairCounts(pairCounts, rules)
 	}
 
-	counts := getElementCounts(polymerTemplate, pairCounts)
+	counts := getElementCounts(polymerTemplate[0], pairCounts)
 	return getMinAndMaxDiff(counts)
 }
 
