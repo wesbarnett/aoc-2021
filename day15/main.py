@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+import heapq
 from pathlib import Path
 
 
@@ -39,22 +40,23 @@ def tile_data(data, n):
 def find_lowest_risk(data, dup=1):
 
     data = tile_data(data, dup)
+    nrows, ncols = len(data), len(data[0])
 
-    ncols, nrows = len(data[0]), len(data)
+    risk = {(i, j): float("inf") for i in range(nrows) for j in range(ncols)}
+    queue = [(0, (0, 0))]
 
-    data[0][0] = 0
+    while queue:
+        current_risk, position = heapq.heappop(queue)
 
-    for row in range(1, nrows):
-        data[row][0] += data[row-1][0]
+        for d in [(-1, 0), (0, -1), (1, 0), (0, 1)]:
+            neighb = d[0] + position[0], d[1] + position[1]
+            if neighb in risk:
+                new_risk = current_risk + data[neighb[1]][neighb[0]]
+                if new_risk < risk[neighb]:
+                    risk[neighb] = new_risk
+                    heapq.heappush(queue, (new_risk, neighb))
 
-    for col in range(1, ncols):
-        data[0][col] += data[0][col-1]
-
-    for row in range(1, nrows):
-        for col in range(1, ncols):
-            data[row][col] += min(data[row-1][col], data[row][col-1])
-
-    return data[-1][-1]
+    return risk[(nrows-1, ncols-1)]
 
 
 if __name__ == "__main__":
