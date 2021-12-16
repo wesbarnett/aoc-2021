@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from collections import defaultdict
-import heapq
+from queue import PriorityQueue
 from pathlib import Path
 
 
@@ -44,10 +44,11 @@ def find_lowest_risk(data, dup=1):
     nrows, ncols = len(data), len(data[0])
 
     risk = defaultdict(lambda: float("inf"))
-    queue = [(0, (0, 0))]
+    queue = PriorityQueue()
+    queue.put((0, (0, 0)))
 
-    while queue:
-        current_risk, (col, row) = heapq.heappop(queue)
+    while not queue.empty():
+        current_risk, (col, row) = queue.get()
 
         for d in [(-1, 0), (0, -1), (1, 0), (0, 1)]:
             neighb_col, neighb_row = d[0] + col, d[1] + row
@@ -56,7 +57,7 @@ def find_lowest_risk(data, dup=1):
             new_risk = current_risk + data[neighb_row][neighb_col]
             if new_risk < risk[(neighb_col, neighb_row)]:
                 risk[(neighb_col, neighb_row)] = new_risk
-                heapq.heappush(queue, (new_risk, (neighb_col, neighb_row)))
+                queue.put((new_risk, (neighb_col, neighb_row)))
 
     return risk[(nrows-1, ncols-1)]
 
