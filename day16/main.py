@@ -3,20 +3,6 @@ from pathlib import Path
 from math import prod
 
 
-def calc_literal(b, i):
-    groups = []
-    while b[i] == "1":
-        i, g = i+5, b[i+1:i+5]
-        groups.append(g)
-    i, g = i+5, b[i+1:i+5]
-    groups.append(g)
-    return i, int("".join(groups), 2)
-
-
-def next_val(b, i, amt=1):
-    return i+amt, int(b[i:i+amt], 2)
-
-
 def calc_subpack(vals, type_id):
     if type_id == 0:
         return sum(vals)
