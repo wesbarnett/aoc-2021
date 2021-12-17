@@ -22,8 +22,6 @@ class TargetArea:
     def __call__(self, x, y):
         if self.x1 <= x <= self.x2 and self.y1 <= y <= self.y2:
             return "success"
-        elif x > self.x2 or y > self.y2:
-            return "too far"
         else:
             return "keep going"
 
@@ -36,10 +34,15 @@ class Probe:
         self.vx = vx
         self.vy = vy
         self.ta = ta
+        self.maxy = 0
 
     def __call__(self):
         self.x += self.vx
         self.y += self.vy
+        print(self.x, self.y)
+
+        if self.y > self.maxy:
+            self.maxy = self.y
 
         if self.vx > 0:
             self.vx -= 1
@@ -58,10 +61,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     ta = TargetArea(20, 30, 10, -5)
+    ta = TargetArea(211, 232, -124, -69)
 
-    probe = Probe(17, -4, ta)
+    probe = Probe(21, 123, ta)
     status = probe()
     while status == "keep going":
         status = probe()
 
     print(status)
+    print(probe.x, probe.y)
+    print(probe.maxy)
