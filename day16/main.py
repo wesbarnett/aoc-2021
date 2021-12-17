@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from pathlib import Path
+from math import prod
 
 
 def calc_literal(b, i):
@@ -16,6 +17,23 @@ def next_val(b, i, amt=1):
     return i+amt, int(b[i:i+amt], 2)
 
 
+def calc_subpack(vals, type_id):
+    if type_id == 0:
+        return sum(vals)
+    elif type_id == 1:
+        return prod(vals)
+    elif type_id == 2:
+        return min(vals)
+    elif type_id == 3:
+        return max(vals)
+    elif type_id == 5:
+        return vals[0] > vals[1]
+    elif type_id == 6:
+        return vals[0] < vals[1]
+    elif type_id == 7:
+        return vals[0] == vals[1]
+
+
 if __name__ == "__main__":
 
     parser = ArgumentParser()
@@ -23,16 +41,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     x = Path(args.infile).read_text().rstrip("\n")
-    x = "D2FE28"
-    x = "38006F45291200"
-    x = "EE00D40C823060"
-    x = "8A004A801A8002F478"
-    x = "620080001611562C8802118E34"
-    x = "C0015000016115A2E0802F182340"
-    x = "A0016C880162017C3686B18A3D4780"
-    print(x)
     b = format(int(x, 16), f"0>{len(x)*4}b")
-    print(b)
 
     total_vers = 0
 
@@ -42,10 +51,8 @@ if __name__ == "__main__":
 
         vers, b = int(b[:3], 2), b[3:]
         total_vers += vers
-        print(f"version = {vers}")
 
         type_id, b = int(b[:3], 2), b[3:]
-        print(f"type id = {type_id}")
 
         if type_id == 4:
 
@@ -66,8 +73,7 @@ if __name__ == "__main__":
             groups.append(g)
 
             val = int("".join(groups), 2)
-            print(f"val = {val}")
-            return length + 6
+            return length + 6, val
 
         else:
 
@@ -78,21 +84,30 @@ if __name__ == "__main__":
                 subpackets_length, b = int(b[:15], 2), b[15:]
 
                 total_length = 0
+                subpack_vals = []
                 while total_length < subpackets_length:
-                    length = run(b)
+                    length, val = run(b)
                     b = b[length:]
                     total_length += length
-                return total_length + 22
+                    subpack_vals.append(val)
+
+                val = calc_subpack(subpack_vals, type_id)
+                return total_length + 22, val
 
             elif length_type == "1":
 
                 subpackets_no, b = int(b[:11], 2), b[11:]
                 total_length = 0
                 length = 0
+                subpack_vals = []
                 for _ in range(subpackets_no):
-                    length = run(b)
+                    length, val = run(b)
                     b = b[length:]
                     total_length += length
-                return total_length + 18
-    run(b)
+                    subpack_vals.append(val)
+                val = calc_subpack(subpack_vals, type_id)
+                return total_length + 18, val
+
+    part2 = run(b)[0]
     print(total_vers)
+    print(part2)
