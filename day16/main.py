@@ -25,61 +25,74 @@ if __name__ == "__main__":
     x = Path(args.infile).read_text().rstrip("\n")
     x = "D2FE28"
     x = "38006F45291200"
-    # x = "EE00D40C823060"
-    # x = "8A004A801A8002F478"
-    # x = "620080001611562C8802118E34"
+    x = "EE00D40C823060"
+    x = "8A004A801A8002F478"
+    x = "620080001611562C8802118E34"
     # x = "C0015000016115A2E0802F182340"
     # x = "A0016C880162017C3686B18A3D4780"
     print(x)
     b = format(int(x, 16), f"0>{len(x)*4}b")
+    print(b)
 
     total_vers = 0
 
     def run(b):
 
         global total_vers
-        print(b)
 
-        i, vers = next_val(b, 0, 3)
+        vers, b = int(b[:3], 2), b[3:]
         total_vers += vers
-        print(f"vers = {vers}")
+        print(f"version = {vers}")
 
-        i, type_id = next_val(b, i, 3)
+        type_id, b = int(b[:3], 2), b[3:]
         print(f"type id = {type_id}")
 
         if type_id == 4:
-            print("calc literal")
-            i, val = calc_literal(b, i)
+
+            length = 0
+            groups = []
+            while b[0] != "0":
+
+                b = b[1:]
+                g, b = b[:4], b[4:]
+                length += 5
+
+                groups.append(g)
+
+            b = b[1:]
+            g, b = b[:4], b[4:]
+            length += 5
+
+            groups.append(g)
+
+            val = int("".join(groups), 2)
             print(f"val = {val}")
-            return i, val
+            return length + 6
 
         else:
 
-            print("operator packet")
+            length_type, b = b[0], b[1:]
 
-            i, length_type_id = i+1, b[i]
+            if length_type == "0":
 
-            if length_type_id == "0":
+                subpackets_length, b = int(b[:15], 2), b[15:]
 
-                i, packet_length = next_val(b, i, 15)
-                print(f"packet length = {packet_length}")
+                total_length = 0
+                while total_length < subpackets_length:
+                    length = run(b)
+                    b = b[:length]
+                    total_length += length
+                return total_length + 22
 
+            elif length_type == "1":
+
+                subpackets_no, b = int(b[:11], 2), b[11:]
+                total_length = 0
                 length = 0
-                i += length
-                while length < packet_length:
-                    j, val = run(b[i:])
-                    i += j
-                    length += j
-                    print(f"length = {length}")
-
-            else:
-                i, num_packets = next_val(b, i, 11)
-                print(f"num packets = {num_packets}")
-                for p in range(num_packets):
-                    print(f"packet {p}")
-                    j, val = run(b[i:])
-                    i += j
-        print(b)
-
+                for _ in range(subpackets_no):
+                    length = run(b)
+                    b = b[length:]
+                    total_length += length
+                return total_length + 18
     run(b)
     print(total_vers)
