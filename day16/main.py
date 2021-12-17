@@ -28,8 +28,8 @@ if __name__ == "__main__":
     x = "EE00D40C823060"
     x = "8A004A801A8002F478"
     x = "620080001611562C8802118E34"
-    # x = "C0015000016115A2E0802F182340"
-    # x = "A0016C880162017C3686B18A3D4780"
+    x = "C0015000016115A2E0802F182340"
+    x = "A0016C880162017C3686B18A3D4780"
     print(x)
     b = format(int(x, 16), f"0>{len(x)*4}b")
     print(b)
@@ -80,7 +80,7 @@ if __name__ == "__main__":
                 total_length = 0
                 while total_length < subpackets_length:
                     length = run(b)
-                    b = b[:length]
+                    b = b[length:]
                     total_length += length
                 return total_length + 22
 
