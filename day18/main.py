@@ -5,6 +5,7 @@ class Node:
         self.left = None
         self.right = None
         self.val = val
+        self.exploded = False
 
 
 def add(x, y):
@@ -46,72 +47,54 @@ def traverse(node):
         traverse(node.right)
 
 
+def reset_exploded(node):
+
+    node.exploded = False
+
+    if node.left is not None:
+        traverse(node.left)
+
+    if node.right is not None:
+        traverse(node.right)
+
+
 def explode(root):
 
-    def helper(node, level=0):
+    def helper(node, level=0, prop_left=False, prop_right=False):
 
-        if node.left is not None and node.right is not None:
+        if node.left is not None and node.right is not None and level == 4:
             if node.left.val is not None and node.right.val is not None:
                 left, right = node.left.val, node.right.val
                 node.val = 0
+                node.exploded = True
                 node.left = None
                 node.right = None
-                return left, right
+                return (left, right), False, False
 
         left = right = None
         if node.left is not None:
-            left = helper(node.left, level+1)
+            left, prop_left, prop_right = helper(node.left, level+1, prop_left, prop_right)
 
         if node.right is not None:
-            right = helper(node.right, level+1)
+            right, prop_left, prop_right = helper(node.right, level+1, prop_left, prop_right)
 
         if left is not None:
-            return left
+            vals = left
         else:
-            return right
+            vals = right
 
-    return helper(root)
+        if node.left is not None and node.left.val is not None and not prop_left and vals is not None and not node.left.exploded:
+            node.left.val += vals[0]
+            prop_left = True
 
+        if node.right is not None and node.right.val is not None and not prop_right and vals is not None and not node.right.exploded:
+            node.right.val += vals[1]
+            prop_right = True
 
-def bfs(root):
+        return vals, prop_left, prop_right
 
-    stack = [root.left, root.right]
-
-    level = 0
-    while stack:
-        print(f"level = {level}")
-        next_stack = []
-        for x in stack:
-            if isinstance(x, Node):
-                next_stack.append(x.left)
-                next_stack.append(x.right)
-        if level == 4:
-            print(stack)
-        stack = next_stack
-        level += 1
-
-
-def update(node, level=0):
-
-    if level == 4:
-        up = node.up
-        while not isinstance(up.right, int):
-            print(up.right)
-            up = up.up
-        if isinstance(up.right, int):
-            node.up.right += node.right
-        else:
-            node.up.right = node.right
-        if isinstance(node.up.left, int):
-            node.up.left += node.left
-        else:
-            node.up.left = node.left
-
-    if isinstance(node.left, Node):
-        update(node.left, level+1)
-
-    if isinstance(node.right, Node):
-        update(node.right, level+1)
+    helper(root)
+    reset_exploded(root)
 
 
 if __name__ == "__main__":
@@ -121,13 +104,15 @@ if __name__ == "__main__":
     # print(add(num1, num2))
 
     A = eval("[[[[[9,8],1],2],3],4]")
-    # A = eval("[7,[6,[5,[4,[3,2]]]]]")
-    # A = eval("[[6,[5,[4,[3,2]]]],1]")
+    A = eval("[7,[6,[5,[4,[3,2]]]]]")
+    A = eval("[[6,[5,[4,[3,2]]]],1]")
+    # A = eval("[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]")
 
     root = create_tree(A)
 
     traverse(root)
 
-    print(explode(root))
+    explode(root)
+    print()
 
     traverse(root)
