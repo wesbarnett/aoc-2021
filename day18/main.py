@@ -96,7 +96,7 @@ def explode(root):
         nonlocal right_val
         nonlocal exploded
 
-        if node.left is not None and node.right is not None and level == 4:
+        if node.left is not None and node.right is not None and level >= 4:
             if node.left.val is not None and node.right.val is not None and not exploded:
                 left, right = node.left.val, node.right.val
                 node.val = 0
@@ -141,6 +141,7 @@ def split(root):
                 val = node.val
                 node.left = Node(math.floor(val / 2))
                 node.right = Node(math.ceil(val / 2))
+                node.val = None
                 return True
 
         if node.left is not None:
@@ -195,4 +196,4 @@ if __name__ == "__main__":
 
         num1 = new_tree
 
-    print(new_tree)
+        print(new_tree)
