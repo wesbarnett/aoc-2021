@@ -35,6 +35,24 @@ def create_tree(A):
     return root
 
 
+def print_tree(root):
+
+    def helper(node):
+
+        if node.left is None and node.right is None:
+            return node.val
+
+        if node.left is not None:
+            left = helper(node.left)
+
+        if node.right is not None:
+            right = helper(node.right)
+
+        return [left, right]
+
+    return helper(root)
+
+
 def traverse(node):
 
     if node.left is None and node.right is None:
@@ -106,13 +124,17 @@ if __name__ == "__main__":
     A = eval("[[[[[9,8],1],2],3],4]")
     A = eval("[7,[6,[5,[4,[3,2]]]]]")
     A = eval("[[6,[5,[4,[3,2]]]],1]")
-    # A = eval("[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]")
+    A = eval("[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]")
+
+    num1 = eval("[[[[4,3],4],4],[7,[[8,4],9]]]")
+    num2 = eval("[1,1]")
 
     root = create_tree(A)
+    print(print_tree(root))
 
-    traverse(root)
+    #traverse(root)
 
-    explode(root)
-    print()
+    #explode(root)
+    #print()
 
-    traverse(root)
+    #traverse(root)
