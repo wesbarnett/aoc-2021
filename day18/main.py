@@ -141,12 +141,19 @@ def split(root):
                 val = node.val
                 node.left = Node(math.floor(val / 2))
                 node.right = Node(math.ceil(val / 2))
+                return True
 
         if node.left is not None:
-            helper(node.left)
+            status = helper(node.left)
+            if status:
+                return True
 
         if node.right is not None:
-            helper(node.right)
+            status = helper(node.right)
+            if status:
+                return True
+
+        return False
 
     helper(root)
 
@@ -165,7 +172,7 @@ if __name__ == "__main__":
 #   ]
     num1 = eval(lines[0])
 
-    for line in lines[1:]:
+    for line in [lines[1]]:
 
         num2 = eval(line)
         A = add(num1, num2)
@@ -182,10 +189,11 @@ if __name__ == "__main__":
                 tree2 = new_tree2
                 explode(root)
                 new_tree2 = print_tree(root)
+                print(new_tree2)
 
             split(root)
             new_tree = print_tree(root)
 
         num1 = new_tree
 
-    print(new_tree)
+        print(new_tree)
