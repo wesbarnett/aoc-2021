@@ -1,3 +1,5 @@
+import math
+
 
 class Node:
 
@@ -67,13 +69,17 @@ def traverse(node):
 
 def reset_exploded(node):
 
-    node.exploded = False
+    def helper(node):
 
-    if node.left is not None:
-        traverse(node.left)
+        node.exploded = False
 
-    if node.right is not None:
-        traverse(node.right)
+        if node.left is not None:
+            helper(node.left)
+
+        if node.right is not None:
+            helper(node.right)
+
+    helper(node)
 
 
 def explode(root):
@@ -115,6 +121,25 @@ def explode(root):
     reset_exploded(root)
 
 
+def split(root):
+
+    def helper(node):
+
+        if node.left is None and node.right is None:
+            if node.val > 9:
+                val = node.val
+                node.left = Node(math.floor(val / 2))
+                node.right = Node(math.ceil(val / 2))
+
+        if node.left is not None:
+            helper(node.left)
+
+        if node.right is not None:
+            helper(node.right)
+
+    helper(root)
+
+
 if __name__ == "__main__":
 
     num1 = eval("[1,2]")
@@ -129,12 +154,16 @@ if __name__ == "__main__":
     num1 = eval("[[[[4,3],4],4],[7,[[8,4],9]]]")
     num2 = eval("[1,1]")
 
+    A = add(num1, num2)
+
     root = create_tree(A)
     print(print_tree(root))
 
-    #traverse(root)
+    explode(root)
+    print(print_tree(root))
 
-    #explode(root)
-    #print()
+    split(root)
+    print(print_tree(root))
 
-    #traverse(root)
+    explode(root)
+    print(print_tree(root))
