@@ -123,6 +123,8 @@ def explode(root):
                 node.exploded = True
                 if prev_node is not None:
                     prev_node.val += left
+                # Save the right value. The next node visited will be where it needs to
+                # be added.
                 right_val = right
                 exploded = True
 
@@ -131,6 +133,7 @@ def explode(root):
             right_val = None
             return True
 
+        # Keep track of previous node, since that will be where the left number is added
         if node.val is not None:
             prev_node = node
 
@@ -177,6 +180,26 @@ def split(root):
     helper(root)
 
 
+def run(root):
+    tree = print_tree(root)
+    new_tree = None
+
+    while tree != new_tree:
+        tree = new_tree
+
+        tree2 = tree
+        new_tree2 = None
+        while tree2 != new_tree2:
+            tree2 = new_tree2
+            explode(root)
+            new_tree2 = print_tree(root)
+
+        split(root)
+        new_tree = print_tree(root)
+
+    return new_tree
+
+
 if __name__ == "__main__":
 
     parser = ArgumentParser()
@@ -185,10 +208,6 @@ if __name__ == "__main__":
 
     lines = Path(args.infile).read_text().rstrip("\n").split("\n")
 
-#   lines = [
-#       "[[[[4,3],4],4],[7,[[8,4],9]]]",
-#       "[1,1]"
-#   ]
     num1 = eval(lines[0])
 
     for line in lines[1:]:
@@ -196,24 +215,21 @@ if __name__ == "__main__":
         num2 = eval(line)
         A = add(num1, num2)
         root = create_tree(A)
-        tree = print_tree(root)
-        new_tree = None
 
-        while tree != new_tree:
-            tree = new_tree
-
-            tree2 = tree
-            new_tree2 = None
-            while tree2 != new_tree2:
-                tree2 = new_tree2
-                explode(root)
-                new_tree2 = print_tree(root)
-
-            split(root)
-            new_tree = print_tree(root)
-
-        num1 = new_tree
-
-        print(new_tree)
+        num1 = run(root)
 
     print(magnitude(root))
+
+    max_mag = 0
+    for i in range(len(lines)):
+        for j in range(len(lines)):
+            if i != j:
+                num1, num2 = eval(lines[i]), eval(lines[j])
+                A = add(num1, num2)
+                root = create_tree(A)
+                run(root)
+                mag = magnitude(root)
+                if mag > max_mag:
+                    max_mag = mag
+
+    print(max_mag)
