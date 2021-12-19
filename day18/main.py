@@ -84,38 +84,37 @@ def reset_exploded(node):
 
 def explode(root):
 
-    def helper(node, level=0, prop_left=False, prop_right=False):
+    prev_node = None
+    right_val = None
+
+    def helper(node, level=0):
+
+        nonlocal prev_node
+        nonlocal right_val
 
         if node.left is not None and node.right is not None and level == 4:
             if node.left.val is not None and node.right.val is not None:
                 left, right = node.left.val, node.right.val
                 node.val = 0
-                node.exploded = True
                 node.left = None
                 node.right = None
-                return (left, right), False, False
+                node.exploded = True
+                if prev_node is not None:
+                    prev_node.val += left
+                right_val = right
 
-        left = right = None
+        if right_val is not None and node.val is not None and not node.exploded:
+            node.val += right_val
+            right_val = None
+
+        if node.val is not None:
+            prev_node = node
+
         if node.left is not None:
-            left, prop_left, prop_right = helper(node.left, level+1, prop_left, prop_right)
+            helper(node.left, level+1)
 
         if node.right is not None:
-            right, prop_left, prop_right = helper(node.right, level+1, prop_left, prop_right)
-
-        if left is not None:
-            vals = left
-        else:
-            vals = right
-
-        if node.left is not None and node.left.val is not None and not prop_left and vals is not None and not node.left.exploded:
-            node.left.val += vals[0]
-            prop_left = True
-
-        if node.right is not None and node.right.val is not None and not prop_right and vals is not None and not node.right.exploded:
-            node.right.val += vals[1]
-            prop_right = True
-
-        return vals, prop_left, prop_right
+            helper(node.right, level+1)
 
     helper(root)
     reset_exploded(root)
@@ -147,9 +146,15 @@ if __name__ == "__main__":
     # print(add(num1, num2))
 
     A = eval("[[[[[9,8],1],2],3],4]")
-    A = eval("[7,[6,[5,[4,[3,2]]]]]")
-    A = eval("[[6,[5,[4,[3,2]]]],1]")
-    A = eval("[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]")
+    # A = eval("[7,[6,[5,[4,[3,2]]]]]")
+    #A = eval("[[6,[5,[4,[3,2]]]],1]")
+    #A = eval("[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]")
+
+#   root = create_tree(A)
+#   print(print_tree(root))
+
+#   explode(root)
+#   print(print_tree(root))
 
     num1 = eval("[[[[4,3],4],4],[7,[[8,4],9]]]")
     num2 = eval("[1,1]")
