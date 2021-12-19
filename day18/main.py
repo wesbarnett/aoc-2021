@@ -57,6 +57,24 @@ def print_tree(root):
     return helper(root)
 
 
+def magnitude(root):
+
+    def helper(node):
+
+        if node.left is None and node.right is None:
+            return node.val
+
+        if node.left is not None:
+            left = helper(node.left)
+
+        if node.right is not None:
+            right = helper(node.right)
+
+        return left*3 + right*2
+
+    return helper(root)
+
+
 def traverse(node):
 
     if node.left is None and node.right is None:
@@ -197,3 +215,5 @@ if __name__ == "__main__":
         num1 = new_tree
 
         print(new_tree)
+
+    print(magnitude(root))
