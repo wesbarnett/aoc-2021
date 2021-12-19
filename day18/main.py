@@ -1,42 +1,76 @@
 
-from collections import deque
-
 class Node:
 
     def __init__(self, val=None):
         self.left = None
         self.right = None
-        self.up = None
+        self.val = val
 
 
 def add(x, y):
     return [x] + [y]
 
 
-def create_tree(A, node):
+def create_tree(A):
 
-    left, right = A[0], A[1]
-    if isinstance(left, list):
-        node.left = Node()
-        node.left.up = node
-        create_tree(left, node.left)
-    else:
-        node.left = left
-    if isinstance(right, list):
-        node.right = Node()
-        node.right.up = node
-        create_tree(right, node.right)
-    else:
-        node.right = right
+    def helper(A, node):
+
+        left, right = A[0], A[1]
+
+        if isinstance(left, list):
+            node.left = Node()
+            helper(left, node.left)
+        else:
+            node.left = Node(left)
+
+        if isinstance(right, list):
+            node.right = Node()
+            helper(right, node.right)
+        else:
+            node.right = Node(right)
+
+    root = Node()
+    helper(A, root)
+    return root
 
 
-def traverse(node, level=0):
+def traverse(node):
 
-    if isinstance(node.left, Node):
-        traverse(node.left, level+1)
-    if isinstance(node.right, Node):
-        traverse(node.right, level+1)
-    print(node.left, node.right)
+    if node.left is None and node.right is None:
+        print(node.val)
+
+    if node.left is not None:
+        traverse(node.left)
+
+    if node.right is not None:
+        traverse(node.right)
+
+
+def explode(root):
+
+    def helper(node, level=0):
+
+        if node.left is not None and node.right is not None:
+            if node.left.val is not None and node.right.val is not None:
+                left, right = node.left.val, node.right.val
+                node.val = 0
+                node.left = None
+                node.right = None
+                return left, right
+
+        left = right = None
+        if node.left is not None:
+            left = helper(node.left, level+1)
+
+        if node.right is not None:
+            right = helper(node.right, level+1)
+
+        if left is not None:
+            return left
+        else:
+            return right
+
+    return helper(root)
 
 
 def bfs(root):
@@ -86,64 +120,14 @@ if __name__ == "__main__":
     num2 = eval("[[3,4],5]")
     # print(add(num1, num2))
 
-    A = "[[[[[9,8],1],2],3],4]"
-    #A = "[7,[6,[5,[4,[3,2]]]]]"
-    #A = "[[6,[5,[4,[3,2]]]],1]"
-    values = deque([])
-    levels = deque([])
-    level = -1
-    for x in A:
-        try:
-            values.append(int(x))
-            levels.append(level)
-        except ValueError:
-            if x == "[":
-                level += 1
-            elif x == "]":
-                level -= 1
+    A = eval("[[[[[9,8],1],2],3],4]")
+    # A = eval("[7,[6,[5,[4,[3,2]]]]]")
+    # A = eval("[[6,[5,[4,[3,2]]]],1]")
 
-    print(values)
-    print(levels)
+    root = create_tree(A)
 
-    val1 = values.popleft()
-    lev1 = levels.popleft()
+    traverse(root)
 
-    val2 = values.popleft()
-    lev2 = levels.popleft()
+    print(explode(root))
 
-    new_levels = deque([])
-    new_values = deque([])
-
-    if lev1 == 4 and lev2 == 4:
-        if len(new_levels) == 0:
-            new_values.append(0)
-            new_levels.append(lev1)
-            lev2 = 
-
-        new_levels.append(lev1)
-
-    else:
-        new_levels.append(lev1)
-        lev1 = lev2
-        lev2 = levels.popleft()
-
-        new_values.append(val1)
-        val1 = val2
-        val2 = values.popleft()
-
-
-    for i in range(1, len(levels)):
-        if values[i-1] == 4 and values[i] == 4:
-            values[:i] + [0] + values[i+1:]
-            levels[:i] + [3, 3] + levels
-
-
-#   root = Node()
-#   create_tree(A, root)
-
-#   # traverse(root)
-#   # bfs(root)
-#   update(root)
-#   print()
-
-#   traverse(root)
+    traverse(root)
