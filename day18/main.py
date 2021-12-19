@@ -1,3 +1,5 @@
+from argparse import ArgumentParser
+from pathlib import Path
 import math
 
 
@@ -86,14 +88,16 @@ def explode(root):
 
     prev_node = None
     right_val = None
+    exploded = False
 
     def helper(node, level=0):
 
         nonlocal prev_node
         nonlocal right_val
+        nonlocal exploded
 
         if node.left is not None and node.right is not None and level == 4:
-            if node.left.val is not None and node.right.val is not None:
+            if node.left.val is not None and node.right.val is not None and not exploded:
                 left, right = node.left.val, node.right.val
                 node.val = 0
                 node.left = None
@@ -102,19 +106,27 @@ def explode(root):
                 if prev_node is not None:
                     prev_node.val += left
                 right_val = right
+                exploded = True
 
         if right_val is not None and node.val is not None and not node.exploded:
             node.val += right_val
             right_val = None
+            return True
 
         if node.val is not None:
             prev_node = node
 
         if node.left is not None:
-            helper(node.left, level+1)
+            status = helper(node.left, level+1)
+            if status:
+                return status
 
         if node.right is not None:
-            helper(node.right, level+1)
+            status = helper(node.right, level+1)
+            if status:
+                return status
+
+        return False
 
     helper(root)
     reset_exploded(root)
@@ -141,34 +153,39 @@ def split(root):
 
 if __name__ == "__main__":
 
-    num1 = eval("[1,2]")
-    num2 = eval("[[3,4],5]")
-    # print(add(num1, num2))
+    parser = ArgumentParser()
+    parser.add_argument("-i", "--infile", required=False, type=Path, default=Path("input"))
+    args = parser.parse_args()
 
-    A = eval("[[[[[9,8],1],2],3],4]")
-    # A = eval("[7,[6,[5,[4,[3,2]]]]]")
-    #A = eval("[[6,[5,[4,[3,2]]]],1]")
-    #A = eval("[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]")
+    lines = Path(args.infile).read_text().rstrip("\n").split("\n")
 
-#   root = create_tree(A)
-#   print(print_tree(root))
+#   lines = [
+#       "[[[[4,3],4],4],[7,[[8,4],9]]]",
+#       "[1,1]"
+#   ]
+    num1 = eval(lines[0])
 
-#   explode(root)
-#   print(print_tree(root))
+    for line in lines[1:]:
 
-    num1 = eval("[[[[4,3],4],4],[7,[[8,4],9]]]")
-    num2 = eval("[1,1]")
+        num2 = eval(line)
+        A = add(num1, num2)
+        root = create_tree(A)
+        tree = print_tree(root)
+        new_tree = None
 
-    A = add(num1, num2)
+        while tree != new_tree:
+            tree = new_tree
 
-    root = create_tree(A)
-    print(print_tree(root))
+            tree2 = tree
+            new_tree2 = None
+            while tree2 != new_tree2:
+                tree2 = new_tree2
+                explode(root)
+                new_tree2 = print_tree(root)
 
-    explode(root)
-    print(print_tree(root))
+            split(root)
+            new_tree = print_tree(root)
 
-    split(root)
-    print(print_tree(root))
+        num1 = new_tree
 
-    explode(root)
-    print(print_tree(root))
+    print(new_tree)
