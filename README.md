@@ -24,3 +24,5 @@ The file for each day contains the solution for both parts of that day.
 | [Day 14](https://adventofcode.com/2021/day/14) | [Python](https://github.com/wesbarnett/aoc-2021/blob/main/day14/main.py) | [Go](https://github.com/wesbarnett/aoc-2021/blob/main/day14/main.go) |
 | [Day 15](https://adventofcode.com/2021/day/15) | [Python](https://github.com/wesbarnett/aoc-2021/blob/main/day15/main.py) |  |
 | [Day 16](https://adventofcode.com/2021/day/16) | [Python](https://github.com/wesbarnett/aoc-2021/blob/main/day16/main.py) |  |
+| [Day 17](https://adventofcode.com/2021/day/16) | [Python](https://github.com/wesbarnett/aoc-2021/blob/main/day17/main.py) |  |
+| [Day 18](https://adventofcode.com/2021/day/16) | [Python](https://github.com/wesbarnett/aoc-2021/blob/main/day18/main.py) |  |
